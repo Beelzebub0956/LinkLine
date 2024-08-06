@@ -1,4 +1,4 @@
-package chat_application;
+package chatting_application;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -9,15 +9,15 @@ import java.text.*;
 import java.net.*;
 import java.io.*;
 
-public class Client implements ActionListener{
+public class Server implements ActionListener{
 	
 	JTextField text;
-	static JPanel a1;
+	JPanel a1;
 	static Box vertical=Box.createVerticalBox();
+	static JFrame f=new JFrame();
 	static DataOutputStream dout;
-	static JFrame f =new JFrame();
 	
-	Client(){
+	Server(){
 		
 		f.setLayout(null);
 		JPanel p1=new JPanel();
@@ -39,7 +39,7 @@ public class Client implements ActionListener{
 			}
 		});
 		
-		ImageIcon i4= new ImageIcon(getClass().getResource("/icons/2.png"));
+		ImageIcon i4= new ImageIcon(getClass().getResource("/icons/BabyBeel.jpg"));
 		Image i5=i4.getImage().getScaledInstance(50,50,Image.SCALE_DEFAULT);
 		ImageIcon i6=new ImageIcon(i5);
 		JLabel Profile=new JLabel(i6);
@@ -67,7 +67,7 @@ public class Client implements ActionListener{
 		morevert.setBounds(400,20,10,25);
 		p1.add(morevert);
 		
-		JLabel name =new JLabel("Buntea");
+		JLabel name =new JLabel("Beelzebub");
 		name.setBounds(110,15,100,18);
 		name.setForeground(Color.WHITE);
 		name.setFont(new Font("SAN_SERIF",Font.BOLD,18));
@@ -80,7 +80,7 @@ public class Client implements ActionListener{
 		p1.add(status);
 		
 		a1 = new JPanel();
-		a1.setLayout(new BoxLayout(a1, BoxLayout.Y_AXIS)); 
+		a1.setLayout(new BoxLayout(a1, BoxLayout.Y_AXIS));
 		JScrollPane sp = new JScrollPane(a1);
 		sp.setBounds(5, 75, 440, 570);
 		f.add(sp);
@@ -100,7 +100,7 @@ public class Client implements ActionListener{
 		
 	
 		f.setSize(450,700);
-		f.setLocation(800,50);
+		f.setLocation(200,50);
 		f.setUndecorated(true);
 		f.getContentPane().setBackground(Color.white);
 		f.setVisible(true);
@@ -157,28 +157,25 @@ public class Client implements ActionListener{
 	}
 	
 	public static void main(String []args) {
-		new Client();
+		new Server();
 		
 		try {
-			Socket s =new Socket("127.0.0.1",6001);
-			DataInputStream din= new DataInputStream(s.getInputStream());
-			dout= new DataOutputStream(s.getOutputStream());
-			
+			ServerSocket skt =new ServerSocket(6001);
 			while(true) {
-				a1.setLayout(new BorderLayout());
-				String msg=din.readUTF();
-				JPanel panel = formatLabel(msg);
+				Socket s= skt.accept();
+				DataInputStream din= new DataInputStream(s.getInputStream());
+				dout= new DataOutputStream(s.getOutputStream());
 				
-				JPanel left =new JPanel(new BorderLayout());
-				left.add(panel,BorderLayout.LINE_START);
-				vertical.add(left);
-				
-				vertical.add(Box.createVerticalStrut(15));
-				a1.add(vertical,BorderLayout.PAGE_START);
-				
-				f.validate();
+				while(true) {
+					String msg=din.readUTF();
+					JPanel panel = formatLabel(msg);
+					
+					JPanel left =new JPanel(new BorderLayout());
+					left.add(panel,BorderLayout.LINE_START);
+					vertical.add(left);
+					f.validate();
+				}
 			}
-			
 		}
 		catch(Exception e) {
 			e.printStackTrace();
